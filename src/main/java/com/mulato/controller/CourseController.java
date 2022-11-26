@@ -3,7 +3,9 @@ package com.mulato.controller;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,6 +28,13 @@ public class CourseController {
     @GetMapping
     public List<Course> list() {
         return courseRepository.findAll();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity <Course> findById(@PathVariable("id") Long id) {
+        return courseRepository.findById(id)
+            .map(course -> ResponseEntity.ok().body(course))
+            .orElse(ResponseEntity.notFound().build());
     }
 
     //@RequestMapping(method = RequestMethod.POST)
