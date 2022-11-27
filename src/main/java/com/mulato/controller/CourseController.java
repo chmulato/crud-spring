@@ -2,8 +2,14 @@ package com.mulato.controller;
 
 import java.util.List;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,14 +23,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.mulato.model.Course;
 import com.mulato.repository.CourseRepository;
 
-import lombok.AllArgsConstructor;
-
+@Validated
 @RestController
 @RequestMapping("/api/courses")
-@AllArgsConstructor
 public class CourseController {
 
-    private final CourseRepository courseRepository;
+	@Autowired
+    private CourseRepository courseRepository;
 
     //@RequestMapping(method = RequestMethod.GET)
     @GetMapping
@@ -42,12 +47,13 @@ public class CourseController {
     //@RequestMapping(method = RequestMethod.POST)
     @PostMapping
     @ResponseStatus(code = HttpStatus.CREATED)
-    public Course create(@RequestBody Course course) {
+    public Course create(@RequestBody @Valid Course course) {
         return courseRepository.save(course);
     }
     
     @PutMapping("/{id}")
-    public ResponseEntity <Course> update(@PathVariable("id") Long id, @RequestBody Course course) {
+    public ResponseEntity <Course> update(@PathVariable("id") @NotNull @Positive Long id, 
+        @RequestBody @Valid Course course) {
         return courseRepository.findById(id)
             .map(courseFound -> {
                 courseFound.setName(course.getName());
@@ -60,7 +66,7 @@ public class CourseController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> delete(@PathVariable("id") @NotNull @Positive Long id) {
         return courseRepository.findById(id)
         .map(courseFound -> {
             courseRepository.delete(courseFound);
